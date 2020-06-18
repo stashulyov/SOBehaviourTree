@@ -10,14 +10,14 @@ namespace Tests
         [TestCase(Result.Success)]
         [TestCase(Result.Failure)]
         [TestCase(Result.Running)]
-        public void OnUpdate_SetResult_ReturnsIt(Result resultToSet)
+        public void OnUpdate_SetResult_ReturnsIt(Result expectedResult)
         {
-            var returnValue = ScriptableObject.CreateInstance<ReturnValue>();
-            returnValue.Result = resultToSet;
+            var task = ScriptableObject.CreateInstance<ReturnValue>();
+            task.Result = expectedResult;
 
-            var result = returnValue.OnUpdate(0f);
+            var result = task.OnUpdate(0f);
 
-            Assert.IsTrue(result == resultToSet);
+            Assert.AreEqual(expectedResult, result);
         }
     }
 }
