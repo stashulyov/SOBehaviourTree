@@ -1,0 +1,14 @@
+{
+    "name": "Extensions",
+    "references": [
+        "GUID:6a20a10a45fc28a4e8450cd7f65828c7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
