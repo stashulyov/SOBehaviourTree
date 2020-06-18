@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Engine
 {
@@ -6,5 +7,23 @@ namespace Engine
     public class ActionNode : Node
     {
         public ActionTask ActionTask;
+
+        public override void OnInitialize()
+        {
+            if (ActionTask == null)
+                throw new InvalidOperationException();
+
+            ActionTask.OnInitialize();
+        }
+
+        public override void OnExecute()
+        {
+            ActionTask.OnExecute();
+        }
+
+        public override Result OnUpdate(float deltaTime)
+        {
+            return ActionTask.OnUpdate(deltaTime);
+        }
     }
 }

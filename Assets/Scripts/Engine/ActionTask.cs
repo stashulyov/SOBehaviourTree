@@ -2,8 +2,12 @@
 
 namespace Engine
 {
-    public abstract class ActionTask : ScriptableObject, IUpdatable, IExecutable
+    public abstract class ActionTask : ScriptableObject, IInitializable, IExecutable, IUpdatable
     {
+        public virtual void OnInitialize()
+        {
+        }
+
         public virtual void OnExecute()
         {
         }

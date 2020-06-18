@@ -1,6 +1,6 @@
 ﻿namespace Engine
 {
-    public interface INode : IUpdatable
+    public interface INode : IInitializable, IExecutable, IUpdatable
     {
     }
 }
