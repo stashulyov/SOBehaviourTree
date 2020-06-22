@@ -23,5 +23,24 @@ namespace Engine
             foreach (var item in Children)
                 item.OnInitialize();
         }
+
+        public override void OnExecute()
+        {
+            foreach (var item in Children)
+                item.OnExecute();
+        }
+
+        public override Result OnUpdate(float deltaTime)
+        {
+            foreach (var item in Children)
+            {
+                var result = item.OnUpdate(deltaTime);
+
+                if (result != Result.Success)
+                    return result;
+            }
+
+            return Result.Success;
+        }
     }
 }
