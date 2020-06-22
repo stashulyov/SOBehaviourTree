@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class SequenceNodeTests
+    public class SelectorNodeTests
     {
         [Test]
         public void OnInitialize_ChildrenListIsNull_Throws()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             node.Children = null;
 
             void Act() => node.OnInitialize();
@@ -23,7 +23,7 @@ namespace Tests
         [Test]
         public void OnInitialize_OneOfChildrenIsNull_Throws()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             node.Children = new List<Node> {null};
 
             void Act() => node.OnInitialize();
@@ -34,7 +34,7 @@ namespace Tests
         [Test]
         public void OnInitialize_SeveralChildren_CallsEach()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             var child1 = Substitute.For<Node>();
             var child2 = Substitute.For<Node>();
             node.Children = new List<Node> {child1, child2};
@@ -48,7 +48,7 @@ namespace Tests
         [Test]
         public void OnExecute_SeveralChildren_CallsEach()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             var child1 = Substitute.For<Node>();
             var child2 = Substitute.For<Node>();
             node.Children = new List<Node> {child1, child2};
@@ -62,7 +62,7 @@ namespace Tests
         [Test]
         public void OnUpdate_SeveralChildren_CallsFirst()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             var child1 = Substitute.For<Node>();
             var child2 = Substitute.For<Node>();
             node.Children = new List<Node> {child1, child2};
@@ -73,38 +73,10 @@ namespace Tests
         }
 
         [Test]
-        public void OnUpdate_EmptyChildrenList_ReturnsSuccess()
+        public void OnUpdate_EmptyChildrenList_ReturnsFailure()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             node.Children = new List<Node>();
-
-            var result = node.OnUpdate(1f);
-
-            Assert.AreEqual(Result.Success, result);
-        }
-
-        [Test]
-        public void OnUpdate_FirstChildReturnsFailure_DoesNotCallSecondChild()
-        {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
-            var child1 = Substitute.For<Node>();
-            child1.OnUpdate(Arg.Any<float>()).Returns(Result.Failure);
-            var child2 = Substitute.For<Node>();
-            node.Children = new List<Node> {child1, child2};
-
-            node.OnUpdate(1f);
-
-            child2.DidNotReceiveWithAnyArgs().OnUpdate(default);
-        }
-
-        [Test]
-        public void OnUpdate_FirstChildReturnsFailure_ReturnsFailure()
-        {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
-            var child1 = Substitute.For<Node>();
-            child1.OnUpdate(Arg.Any<float>()).Returns(Result.Failure);
-            var child2 = Substitute.For<Node>();
-            node.Children = new List<Node> {child1, child2};
 
             var result = node.OnUpdate(1f);
 
@@ -112,11 +84,11 @@ namespace Tests
         }
 
         [Test]
-        public void OnUpdate_FirstChildReturnsSuccess_CallsSecondChild()
+        public void OnUpdate_FirstChildReturnsFailure_CallsSecondChild()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             var child1 = Substitute.For<Node>();
-            child1.OnUpdate(Arg.Any<float>()).Returns(Result.Success);
+            child1.OnUpdate(Arg.Any<float>()).Returns(Result.Failure);
             var child2 = Substitute.For<Node>();
             node.Children = new List<Node> {child1, child2};
 
@@ -126,13 +98,12 @@ namespace Tests
         }
 
         [Test]
-        public void OnUpdate_FirstAndSecondChildrenReturnSuccess_ReturnsSuccess()
+        public void OnUpdate_FirstChildReturnsSuccess_ReturnsSuccess()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             var child1 = Substitute.For<Node>();
-            var child2 = Substitute.For<Node>();
             child1.OnUpdate(Arg.Any<float>()).Returns(Result.Success);
-            child2.OnUpdate(Arg.Any<float>()).Returns(Result.Success);
+            var child2 = Substitute.For<Node>();
             node.Children = new List<Node> {child1, child2};
 
             var result = node.OnUpdate(1f);
@@ -141,9 +112,38 @@ namespace Tests
         }
 
         [Test]
+        public void OnUpdate_FirstChildReturnsSuccess_DoesNotCallSecondChild()
+        {
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
+            var child1 = Substitute.For<Node>();
+            child1.OnUpdate(Arg.Any<float>()).Returns(Result.Success);
+            var child2 = Substitute.For<Node>();
+            node.Children = new List<Node> {child1, child2};
+
+            node.OnUpdate(1f);
+
+            child2.DidNotReceiveWithAnyArgs().OnUpdate(default);
+        }
+
+        [Test]
+        public void OnUpdate_FirstAndSecondChildrenReturnFailure_ReturnsFailure()
+        {
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
+            var child1 = Substitute.For<Node>();
+            var child2 = Substitute.For<Node>();
+            child1.OnUpdate(Arg.Any<float>()).Returns(Result.Failure);
+            child2.OnUpdate(Arg.Any<float>()).Returns(Result.Failure);
+            node.Children = new List<Node> {child1, child2};
+
+            var result = node.OnUpdate(1f);
+
+            Assert.AreEqual(Result.Failure, result);
+        }
+
+        [Test]
         public void OnUpdate_FirstChildReturnsRunning_DoesNotCallSecondChild()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             var child1 = Substitute.For<Node>();
             child1.OnUpdate(Arg.Any<float>()).Returns(Result.Running);
             var child2 = Substitute.For<Node>();
@@ -157,7 +157,7 @@ namespace Tests
         [Test]
         public void OnUpdate_FirstChildReturnsRunning_ReturnsRunning()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             var child1 = Substitute.For<Node>();
             child1.OnUpdate(Arg.Any<float>()).Returns(Result.Running);
             var child2 = Substitute.For<Node>();
@@ -169,18 +169,18 @@ namespace Tests
         }
 
         [Test]
-        public void OnUpdate_FirstChildReturnsSuccessAndSecondReturnsFailure_ReturnsFailure()
+        public void OnUpdate_FirstChildReturnsFailureAndSecondReturnsSuccess_ReturnsSuccess()
         {
-            var node = ScriptableObject.CreateInstance<SequenceNode>();
+            var node = ScriptableObject.CreateInstance<SelectorNode>();
             var child1 = Substitute.For<Node>();
             var child2 = Substitute.For<Node>();
-            child1.OnUpdate(Arg.Any<float>()).Returns(Result.Success);
-            child2.OnUpdate(Arg.Any<float>()).Returns(Result.Failure);
+            child1.OnUpdate(Arg.Any<float>()).Returns(Result.Failure);
+            child2.OnUpdate(Arg.Any<float>()).Returns(Result.Success);
             node.Children = new List<Node> {child1, child2};
 
             var result = node.OnUpdate(1f);
 
-            Assert.AreEqual(Result.Failure, result);
+            Assert.AreEqual(Result.Success, result);
         }
     }
 }
