@@ -65,12 +65,11 @@ namespace Tests
             var task = ScriptableObject.CreateInstance<Timer>();
             task.Value = 2f;
 
-            var result = task.OnUpdate(4f);
-
+            task.OnUpdate(4f);
             task.OnExecute();
 
-            result = task.OnUpdate(1f);
-            
+            var result = task.OnUpdate(1f);
+
             Assert.AreEqual(Result.Running, result);
         }
     }
