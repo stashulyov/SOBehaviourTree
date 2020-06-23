@@ -11,7 +11,7 @@ namespace Engine
         public override void OnInitialize()
         {
             if (ActionTask == null)
-                throw new InvalidOperationException();
+                throw new NullReferenceException();
 
             ActionTask.OnInitialize();
         }

@@ -15,7 +15,7 @@ namespace Tests
 
             void Act() => node.OnInitialize();
 
-            Assert.Throws<InvalidOperationException>(Act);
+            Assert.Throws<NullReferenceException>(Act);
         }
 
         [Test]
