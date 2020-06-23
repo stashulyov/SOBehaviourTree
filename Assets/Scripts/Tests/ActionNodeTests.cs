@@ -53,5 +53,20 @@ namespace Tests
 
             actionTask.ReceivedWithAnyArgs().OnUpdate(default);
         }
+
+        [TestCase(Result.Failure)]
+        [TestCase(Result.Running)]
+        [TestCase(Result.Success)]
+        public void OnUpdate_NodeReturnsSameResult(Result expectedResult)
+        {
+            var node = ScriptableObject.CreateInstance<ActionNode>();
+            var actionTask = Substitute.For<ActionTask>();
+            actionTask.OnUpdate(Arg.Any<float>()).Returns(expectedResult);
+            node.ActionTask = actionTask;
+
+            var actualResult = node.OnUpdate(1f);
+            
+            Assert.AreEqual(expectedResult, actualResult);
+        }
     }
 }
