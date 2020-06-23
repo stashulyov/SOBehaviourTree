@@ -8,7 +8,7 @@ namespace Extensions
     {
         public Result Result;
 
-        public Result OnUpdate(float deltaTime)
+        public override Result OnUpdate(float deltaTime)
         {
             return Result;
         }
